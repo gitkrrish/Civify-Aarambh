@@ -30,10 +30,10 @@ export type Issue = {
 
 export const initialUsers: User[] = [
   { id: 1, name: "Krrish Shaw", points: 5 },
-  { id: 2, name: "Rishu Singh", points: 4 },
+  { id: 2, name: "Satish Yadav", points: 4 },
   { id: 3, name: "Ankan Ghosh", points: 3 },
   { id: 4, name: "Rahul Verma", points: 2 },
-  { id: 5, name: "Aman Yadav", points: 1 }
+  { id: 5, name: "Aman Gupta", points: 1 }
 ];
 
 export const initialIssues: Issue[] = [
@@ -54,7 +54,7 @@ export const initialIssues: Issue[] = [
     location: 'Sector 15, Noida',
     category: 'Streetlight',
     status: 'Pending',
-    reporterName: 'Rishu Singh',
+    reporterName: 'Satish Yadav',
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
