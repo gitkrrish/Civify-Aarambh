@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, Menu, LogOut } from "lucide-react";
+import { Building2, Menu, LogOut, Shield } from "lucide-react";
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -35,32 +35,22 @@ export function Header() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  const Logo = () => (
+    <Link href={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} className="flex items-center gap-2">
+      <Building2 className="h-6 w-6 text-primary" />
+      <span className="font-bold text-lg font-headline tracking-tight">Civify</span>
+    </Link>
+  );
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <div className="mr-4 hidden md:flex">
-          <Link href={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} className="mr-6 flex items-center space-x-2">
-            <Building2 className="h-6 w-6 text-primary" />
-            <span className="hidden font-bold sm:inline-block font-headline">Civify</span>
-          </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "transition-colors hover:text-primary",
-                  pathname === link.href ? "text-primary font-semibold" : "text-muted-foreground"
-                )}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
+        <div className="mr-6 hidden md:flex">
+          <Logo />
         </div>
 
         {/* Mobile Menu */}
-        <div className="flex-1 md:hidden">
+        <div className="flex items-center md:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -69,18 +59,20 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
-              <Link href={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} className="flex items-center space-x-2 mb-6">
-                <Building2 className="h-6 w-6 text-primary" />
-                <span className="font-bold font-headline">Civify</span>
-              </Link>
-              <div className="flex flex-col space-y-3">
+               <SheetHeader className="sr-only">
+                <SheetTitle>Navigation Menu</SheetTitle>
+              </SheetHeader>
+              <div className="p-4 mb-4 border-b">
+                 <Logo />
+              </div>
+              <div className="flex flex-col space-y-2">
                 {navLinks.map((link) => (
                   <SheetClose asChild key={link.href}>
                     <Link
                       href={link.href}
                       className={cn(
-                        "transition-colors hover:text-primary pl-4 py-2 rounded-l-md",
-                        pathname === link.href ? "bg-primary/10 text-primary font-semibold" : "text-muted-foreground"
+                        "transition-colors hover:text-primary pl-4 py-2 rounded-l-md text-md",
+                        pathname === link.href ? "bg-muted text-primary font-semibold" : "text-muted-foreground"
                       )}
                     >
                       {link.name}
@@ -91,14 +83,30 @@ export function Header() {
             </SheetContent>
           </Sheet>
         </div>
+        
+        {/* Desktop Menu */}
+        <nav className="hidden md:flex flex-1 items-center space-x-6 text-sm font-medium">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname === link.href ? "text-foreground font-semibold" : "text-foreground/60"
+                )}
+              >
+                {link.name}
+              </Link>
+            ))}
+        </nav>
 
         <div className="flex flex-1 items-center justify-end space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                <Avatar className="h-9 w-9">
+                <Avatar className="h-9 w-9 border-2 border-primary/50">
                   <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user?.name}`} alt={user?.name} />
-                  <AvatarFallback>{user ? getInitials(user.name) : 'U'}</AvatarFallback>
+                  <AvatarFallback className="font-bold">{user ? getInitials(user.name) : 'U'}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -106,7 +114,10 @@ export function Header() {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">{user?.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">{user?.role}</p>
+                  <p className="text-xs leading-none text-muted-foreground capitalize flex items-center gap-1">
+                    {user?.role === 'admin' && <Shield className="w-3 h-3 text-primary" />}
+                    {user?.role}
+                  </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
