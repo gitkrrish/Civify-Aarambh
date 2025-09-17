@@ -15,21 +15,26 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+// By changing the key, we force a reset of the data in local storage
+// This ensures that the updated initial data is loaded.
+const USERS_STORAGE_KEY = 'civify-users-v2';
+const ISSUES_STORAGE_KEY = 'civify-issues-v2';
+
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [users, setUsers] = useLocalStorage<User[]>('civify-users', []);
-  const [issues, setIssues] = useLocalStorage<Issue[]>('civify-issues', []);
+  const [users, setUsers] = useLocalStorage<User[]>(USERS_STORAGE_KEY, initialUsers);
+  const [issues, setIssues] = useLocalStorage<Issue[]>(ISSUES_STORAGE_KEY, initialIssues);
   const { user: currentUser } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
     setIsMounted(true);
     // Initialize with dummy data if localStorage is empty
-    const areUsersInitialized = localStorage.getItem('civify-users');
+    const areUsersInitialized = localStorage.getItem(USERS_STORAGE_KEY);
     if (!areUsersInitialized || JSON.parse(areUsersInitialized).length === 0) {
       setUsers(initialUsers);
     }
-    const areIssuesInitialized = localStorage.getItem('civify-issues');
+    const areIssuesInitialized = localStorage.getItem(ISSUES_STORAGE_KEY);
     if (!areIssuesInitialized || JSON.parse(areIssuesInitialized).length === 0) {
       setIssues(initialIssues);
     }
