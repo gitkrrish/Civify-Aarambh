@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -45,50 +46,11 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
+        {/* Desktop Logo */}
         <div className="mr-6 hidden md:flex">
           <Logo />
         </div>
         
-        {/* Mobile Menu Button */}
-        <div className="flex items-center md:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="pr-0">
-               <SheetHeader className="sr-only">
-                <SheetTitle>Navigation Menu</SheetTitle>
-              </SheetHeader>
-              <div className="p-4 mb-4 border-b">
-                 <Logo />
-              </div>
-              <div className="flex flex-col space-y-2">
-                {navLinks.map((link) => (
-                  <SheetClose asChild key={link.href}>
-                    <Link
-                      href={link.href}
-                      className={cn(
-                        "transition-colors hover:text-primary pl-4 py-2 rounded-l-md text-md",
-                        pathname === link.href ? "bg-muted text-primary font-semibold" : "text-muted-foreground"
-                      )}
-                    >
-                      {link.name}
-                    </Link>
-                  </SheetClose>
-                ))}
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-        
-        {/* Mobile Logo */}
-        <div className="flex-1 justify-center items-center flex md:hidden">
-          <Logo />
-        </div>
-
         {/* Desktop Menu */}
         <nav className="hidden md:flex flex-1 items-center space-x-6 text-sm font-medium">
             {navLinks.map((link) => (
@@ -105,7 +67,52 @@ export function Header() {
             ))}
         </nav>
 
-        <div className="flex items-center justify-end space-x-4">
+        {/* Mobile Header Layout */}
+        <div className="flex-1 flex items-center justify-between md:hidden">
+            {/* Mobile Menu Button */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Toggle Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="pr-0">
+                 <SheetHeader>
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                </SheetHeader>
+                <div className="p-4 mb-4 border-b">
+                   <Logo />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  {navLinks.map((link) => (
+                    <SheetClose asChild key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={cn(
+                          "transition-colors hover:text-primary pl-4 py-2 rounded-l-md text-md",
+                          pathname === link.href ? "bg-muted text-primary font-semibold" : "text-muted-foreground"
+                        )}
+                      >
+                        {link.name}
+                      </Link>
+                    </SheetClose>
+                  ))}
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            {/* Mobile Logo */}
+            <div className="flex items-center">
+                <Logo />
+            </div>
+
+            {/* Placeholder for Profile Button */}
+            <div className="w-10"></div>
+        </div>
+
+        {/* Profile / Right Aligned Section */}
+        <div className="flex items-center justify-end md:flex-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
