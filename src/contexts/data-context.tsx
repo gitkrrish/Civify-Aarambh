@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import useLocalStorage from '@/hooks/use-local-storage';
 import { initialUsers, initialIssues, type User, type Issue, type IssueStatus, type IssueCategory } from '@/lib/data';
 import { useAuth } from './auth-context';
@@ -16,12 +16,14 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isMounted, setIsMounted] = useState(false);
   const [users, setUsers] = useLocalStorage<User[]>('civify-users', []);
   const [issues, setIssues] = useLocalStorage<Issue[]>('civify-issues', []);
   const { user: currentUser } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
+    setIsMounted(true);
     // Initialize with dummy data if localStorage is empty
     const areUsersInitialized = localStorage.getItem('civify-users');
     if (!areUsersInitialized || JSON.parse(areUsersInitialized).length === 0) {
@@ -71,6 +73,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       )
     );
   };
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <DataContext.Provider value={{ users, issues, addIssue, updateIssueStatus }}>

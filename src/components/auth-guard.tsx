@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import type { Role } from '@/lib/data';
@@ -9,8 +9,14 @@ export default function AuthGuard({ children, requiredRole }: { children: React.
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
     if (user === undefined) return; 
 
     if (!user) {
@@ -22,9 +28,9 @@ export default function AuthGuard({ children, requiredRole }: { children: React.
       router.push(user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
     }
 
-  }, [user, router, requiredRole, pathname]);
+  }, [user, router, requiredRole, pathname, isMounted]);
 
-  if (!user || (requiredRole && user.role !== requiredRole)) {
+  if (!isMounted || !user || (requiredRole && user.role !== requiredRole)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p>Loading...</p>
