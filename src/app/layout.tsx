@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'Civitas',
+  title: 'Civify',
   description: 'A civic issue reporting platform.',
 };
 

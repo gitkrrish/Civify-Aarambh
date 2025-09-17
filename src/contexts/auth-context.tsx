@@ -14,7 +14,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useLocalStorage<LoggedInUser | null>('civitas-user', null);
+  const [user, setUser] = useLocalStorage<LoggedInUser | null>('civify-user', null);
   const router = useRouter();
 
   const login = (name: string, role: Role) => {

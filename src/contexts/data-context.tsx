@@ -16,18 +16,18 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [users, setUsers] = useLocalStorage<User[]>('civitas-users', []);
-  const [issues, setIssues] = useLocalStorage<Issue[]>('civitas-issues', []);
+  const [users, setUsers] = useLocalStorage<User[]>('civify-users', []);
+  const [issues, setIssues] = useLocalStorage<Issue[]>('civify-issues', []);
   const { user: currentUser } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
     // Initialize with dummy data if localStorage is empty
-    const areUsersInitialized = localStorage.getItem('civitas-users');
+    const areUsersInitialized = localStorage.getItem('civify-users');
     if (!areUsersInitialized || JSON.parse(areUsersInitialized).length === 0) {
       setUsers(initialUsers);
     }
-    const areIssuesInitialized = localStorage.getItem('civitas-issues');
+    const areIssuesInitialized = localStorage.getItem('civify-issues');
     if (!areIssuesInitialized || JSON.parse(areIssuesInitialized).length === 0) {
       setIssues(initialIssues);
     }

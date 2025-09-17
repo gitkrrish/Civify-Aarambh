@@ -31,7 +31,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="flex justify-center items-center gap-2 mb-2">
             <Building2 className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-headline font-bold">Civitas</h1>
+            <h1 className="text-3xl font-headline font-bold">Civify</h1>
           </div>
           <CardTitle className="text-2xl">Welcome!</CardTitle>
           <CardDescription>Log in to report and track civic issues.</CardDescription>
