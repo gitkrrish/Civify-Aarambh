@@ -68,7 +68,7 @@ export function Header() {
         </nav>
 
         {/* Mobile Header Layout */}
-        <div className="flex-1 flex items-center justify-between md:hidden">
+        <div className="flex flex-1 items-center justify-between md:hidden">
             {/* Mobile Menu Button */}
             <Sheet>
               <SheetTrigger asChild>
@@ -78,12 +78,10 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="pr-0">
-                 <SheetHeader>
+                 <SheetHeader className="p-4 mb-4 border-b">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                </SheetHeader>
-                <div className="p-4 mb-4 border-b">
                    <Logo />
-                </div>
+                </SheetHeader>
                 <div className="flex flex-col space-y-2">
                   {navLinks.map((link) => (
                     <SheetClose asChild key={link.href}>
