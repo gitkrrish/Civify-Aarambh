@@ -48,8 +48,8 @@ export function Header() {
         <div className="mr-6 hidden md:flex">
           <Logo />
         </div>
-
-        {/* Mobile Menu */}
+        
+        {/* Mobile Menu Button */}
         <div className="flex items-center md:hidden">
           <Sheet>
             <SheetTrigger asChild>
@@ -84,6 +84,11 @@ export function Header() {
           </Sheet>
         </div>
         
+        {/* Mobile Logo */}
+        <div className="flex-1 justify-center items-center flex md:hidden">
+          <Logo />
+        </div>
+
         {/* Desktop Menu */}
         <nav className="hidden md:flex flex-1 items-center space-x-6 text-sm font-medium">
             {navLinks.map((link) => (
@@ -100,7 +105,7 @@ export function Header() {
             ))}
         </nav>
 
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex items-center justify-end space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
