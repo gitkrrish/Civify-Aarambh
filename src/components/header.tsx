@@ -37,7 +37,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
           <Link href={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} className="mr-6 flex items-center space-x-2">
             <Building2 className="h-6 w-6 text-primary" />
@@ -49,8 +49,8 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "transition-colors hover:text-foreground/80",
-                  pathname === link.href ? "text-foreground" : "text-foreground/60"
+                  "transition-colors hover:text-primary",
+                  pathname === link.href ? "text-primary font-semibold" : "text-muted-foreground"
                 )}
               >
                 {link.name}
@@ -79,8 +79,8 @@ export function Header() {
                     <Link
                       href={link.href}
                       className={cn(
-                        "transition-colors hover:text-foreground/80 pl-4 py-2 rounded-l-md",
-                        pathname === link.href ? "bg-muted text-foreground" : "text-foreground/60"
+                        "transition-colors hover:text-primary pl-4 py-2 rounded-l-md",
+                        pathname === link.href ? "bg-primary/10 text-primary font-semibold" : "text-muted-foreground"
                       )}
                     >
                       {link.name}
@@ -95,8 +95,8 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                <Avatar className="h-9 w-9">
                   <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user?.name}`} alt={user?.name} />
                   <AvatarFallback>{user ? getInitials(user.name) : 'U'}</AvatarFallback>
                 </Avatar>

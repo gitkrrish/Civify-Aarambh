@@ -26,14 +26,15 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
+      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]"><div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_800px_at_100%_200px,#d5c5ff,transparent)]"></div></div>
+      <Card className="w-full max-w-sm shadow-2xl">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center gap-2 mb-2">
             <Building2 className="h-8 w-8 text-primary" />
             <h1 className="text-3xl font-headline font-bold">Civify</h1>
           </div>
-          <CardTitle className="text-2xl">Welcome!</CardTitle>
+          <CardTitle className="text-2xl font-headline">Welcome!</CardTitle>
           <CardDescription>Log in to report and track civic issues.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
