@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Wand2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -13,6 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useData } from "@/contexts/data-context";
 import { issueCategories, type IssueCategory } from "@/lib/data";
+import { summarizeIssue } from "@/ai/flows/summarize-issue-flow";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters." }).max(100),
@@ -24,6 +28,8 @@ const formSchema = z.object({
 export default function ReportIssuePage() {
   const { addIssue } = useData();
   const router = useRouter();
+  const { toast } = useToast();
+  const [isSummarizing, setIsSummarizing] = useState(false);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,6 +39,40 @@ export default function ReportIssuePage() {
       location: "",
     },
   });
+
+  const handleSummarize = async () => {
+    const description = form.getValues("description");
+    if (!description || description.length < 20) {
+      toast({
+        variant: "destructive",
+        title: "Description too short",
+        description: "Please enter a description of at least 20 characters to use the AI summarizer.",
+      });
+      return;
+    }
+
+    setIsSummarizing(true);
+    try {
+      const result = await summarizeIssue({ description });
+      if (result) {
+        form.setValue("title", result.title, { shouldValidate: true });
+        form.setValue("description", result.summarizedDescription, { shouldValidate: true });
+        toast({
+          title: "Content Summarized!",
+          description: "The title and description have been filled out for you.",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to summarize:", error);
+       toast({
+        variant: "destructive",
+        title: "Summarization Failed",
+        description: "The AI failed to summarize the issue. Please try again.",
+      });
+    } finally {
+      setIsSummarizing(false);
+    }
+  };
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     addIssue(values);
@@ -72,11 +112,18 @@ export default function ReportIssuePage() {
                     <FormControl>
                       <Textarea placeholder="Provide more details about the issue..." className="min-h-[120px]" {...field} />
                     </FormControl>
-                    <FormDescription>Describe the issue in as much detail as possible.</FormDescription>
+                    <FormDescription>Describe the issue in as much detail as possible. You can also use our AI to help you write this.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <div className="flex justify-end -mt-4">
+                <Button type="button" variant="outline" size="sm" onClick={handleSummarize} disabled={isSummarizing}>
+                    <Wand2 className="mr-2 h-4 w-4" />
+                    {isSummarizing ? 'Summarizing...' : 'Summarize with AI'}
+                </Button>
+              </div>
+
               <FormField
                 control={form.control}
                 name="location"
