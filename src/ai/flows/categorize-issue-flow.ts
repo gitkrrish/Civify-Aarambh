@@ -17,7 +17,7 @@ const CategorizeIssueInputSchema = z.object({
 export type CategorizeIssueInput = z.infer<typeof CategorizeIssueInputSchema>;
 
 const CategorizeIssueOutputSchema = z.object({
-  category: z.enum(issueCategories as [string, ...string[]]).describe('The most relevant category for the issue.'),
+  category: z.enum(issueCategories as [string, ...string[]]).describe(`The most relevant category for the issue. Must be one of: ${issueCategories.join(', ')}`),
 });
 export type CategorizeIssueOutput = z.infer<typeof CategorizeIssueOutputSchema>;
 
