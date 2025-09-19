@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useData } from "@/contexts/data-context";
 import { issueCategories, type IssueCategory } from "@/lib/data";
-import { summarizeIssue } from "@/ai/flows/summarize-issue-flow";
+import { categorizeIssue } from "@/ai/flows/categorize-issue-flow";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
@@ -29,7 +29,7 @@ export default function ReportIssuePage() {
   const { addIssue } = useData();
   const router = useRouter();
   const { toast } = useToast();
-  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [isCategorizing, setIsCategorizing] = useState(false);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,37 +40,36 @@ export default function ReportIssuePage() {
     },
   });
 
-  const handleSummarize = async () => {
+  const handleCategorize = async () => {
     const description = form.getValues("description");
-    if (!description || description.length < 20) {
+    if (!description || description.length < 10) {
       toast({
         variant: "destructive",
         title: "Description too short",
-        description: "Please enter a description of at least 20 characters to use the AI summarizer.",
+        description: "Please enter a description of at least 10 characters to use the AI categorizer.",
       });
       return;
     }
 
-    setIsSummarizing(true);
+    setIsCategorizing(true);
     try {
-      const result = await summarizeIssue({ description });
-      if (result) {
-        form.setValue("title", result.title, { shouldValidate: true });
-        form.setValue("description", result.summarizedDescription, { shouldValidate: true });
+      const result = await categorizeIssue({ description });
+      if (result && result.category) {
+        form.setValue("category", result.category, { shouldValidate: true });
         toast({
-          title: "Content Summarized!",
-          description: "The title and description have been filled out for you.",
+          title: "Category Detected!",
+          description: `The AI has suggested the "${result.category}" category for your issue.`,
         });
       }
     } catch (error) {
-      console.error("Failed to summarize:", error);
+      console.error("Failed to categorize:", error);
        toast({
         variant: "destructive",
-        title: "Summarization Failed",
-        description: "The AI failed to summarize the issue. Please try again.",
+        title: "Categorization Failed",
+        description: "The AI failed to determine a category. Please select one manually.",
       });
     } finally {
-      setIsSummarizing(false);
+      setIsCategorizing(false);
     }
   };
 
@@ -112,18 +111,12 @@ export default function ReportIssuePage() {
                     <FormControl>
                       <Textarea placeholder="Provide more details about the issue..." className="min-h-[120px]" {...field} />
                     </FormControl>
-                    <FormDescription>Describe the issue in as much detail as possible. You can also use our AI to help you write this.</FormDescription>
+                    <FormDescription>Describe the issue in as much detail as possible.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <div className="flex justify-end -mt-4">
-                <Button type="button" variant="outline" size="sm" onClick={handleSummarize} disabled={isSummarizing}>
-                    <Wand2 className="mr-2 h-4 w-4" />
-                    {isSummarizing ? 'Summarizing...' : 'Summarize with AI'}
-                </Button>
-              </div>
-
+              
               <FormField
                 control={form.control}
                 name="location"
@@ -143,8 +136,14 @@ export default function ReportIssuePage() {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <div className="flex justify-between items-center">
+                      <FormLabel>Category</FormLabel>
+                      <Button type="button" variant="outline" size="sm" onClick={handleCategorize} disabled={isCategorizing}>
+                          <Wand2 className="mr-2 h-4 w-4" />
+                          {isCategorizing ? 'Categorizing...' : 'Categorize with AI'}
+                      </Button>
+                    </div>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select an issue category" />
@@ -156,7 +155,7 @@ export default function ReportIssuePage() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>Choose the category that best fits the issue.</FormDescription>
+                    <FormDescription>Choose the category that best fits the issue, or let AI do it for you.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
