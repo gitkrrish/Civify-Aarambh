@@ -138,9 +138,16 @@ export default function ReportIssuePage() {
                   <FormItem>
                     <div className="flex justify-between items-center">
                       <FormLabel>Category</FormLabel>
-                      <Button type="button" variant="outline" size="sm" onClick={handleCategorize} disabled={isCategorizing}>
-                          <Wand2 className="mr-2 h-4 w-4" />
-                          {isCategorizing ? 'Categorizing...' : 'Categorize with AI'}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCategorize}
+                        disabled={isCategorizing}
+                        className="relative overflow-hidden bg-primary/10 border-primary/20 text-primary/80 hover:bg-primary/15 hover:text-primary animate-pulse-slow shadow-[0_0_15px_theme(colors.primary/20)]"
+                      >
+                        <Wand2 className="mr-2 h-4 w-4" />
+                        {isCategorizing ? 'Categorizing...' : 'Categorize with AI'}
                       </Button>
                     </div>
                     <Select onValueChange={field.onChange} value={field.value}>
