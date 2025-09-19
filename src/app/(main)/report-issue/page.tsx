@@ -4,8 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Wand2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -14,9 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useData } from "@/contexts/data-context";
-import { issueCategories, type IssueCategory } from "@/lib/data";
-import { categorizeIssue } from "@/ai/flows/categorize-issue-flow";
-import { useToast } from "@/hooks/use-toast";
+import { issueCategories } from "@/lib/data";
 
 const formSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters." }).max(100),
@@ -28,8 +24,6 @@ const formSchema = z.object({
 export default function ReportIssuePage() {
   const { addIssue } = useData();
   const router = useRouter();
-  const { toast } = useToast();
-  const [isCategorizing, setIsCategorizing] = useState(false);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,39 +33,6 @@ export default function ReportIssuePage() {
       location: "",
     },
   });
-
-  const handleCategorize = async () => {
-    const description = form.getValues("description");
-    if (!description || description.length < 10) {
-      toast({
-        variant: "destructive",
-        title: "Description too short",
-        description: "Please enter a description of at least 10 characters to use the AI categorizer.",
-      });
-      return;
-    }
-
-    setIsCategorizing(true);
-    try {
-      const result = await categorizeIssue({ description });
-      if (result && result.category) {
-        form.setValue("category", result.category, { shouldValidate: true });
-        toast({
-          title: "Category Detected!",
-          description: `The AI has suggested the "${result.category}" category for your issue.`,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to categorize:", error);
-       toast({
-        variant: "destructive",
-        title: "Categorization Failed",
-        description: "The AI failed to determine a category. Please select one manually.",
-      });
-    } finally {
-      setIsCategorizing(false);
-    }
-  };
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     addIssue(values);
@@ -136,20 +97,7 @@ export default function ReportIssuePage() {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex justify-between items-center">
-                      <FormLabel>Category</FormLabel>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        onClick={handleCategorize}
-                        disabled={isCategorizing}
-                        className="bg-primary text-primary-foreground hover:bg-primary/90"
-                      >
-                        <Wand2 className="mr-2 h-4 w-4" />
-                        {isCategorizing ? 'Categorizing...' : 'Categorize with AI'}
-                      </Button>
-                    </div>
+                    <FormLabel>Category</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -162,7 +110,7 @@ export default function ReportIssuePage() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>Choose the category that best fits the issue, or let AI do it for you.</FormDescription>
+                    <FormDescription>Choose the category that best fits the issue.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
