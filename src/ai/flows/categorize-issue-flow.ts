@@ -21,6 +21,11 @@ const CategorizeIssueOutputSchema = z.object({
 });
 export type CategorizeIssueOutput = z.infer<typeof CategorizeIssueOutputSchema>;
 
+// Internal schema for a less strict AI response
+const AIGuessSchema = z.object({
+  categoryGuess: z.string().describe(`The best guess for the issue category. Should be one of: ${issueCategories.join(', ')}`),
+});
+
 export async function categorizeIssue(input: CategorizeIssueInput): Promise<CategorizeIssueOutput> {
   return categorizeIssueFlow(input);
 }
@@ -28,14 +33,11 @@ export async function categorizeIssue(input: CategorizeIssueInput): Promise<Cate
 const prompt = ai.definePrompt({
   name: 'categorizeIssuePrompt',
   input: {schema: CategorizeIssueInputSchema},
-  output: {schema: CategorizeIssueOutputSchema},
+  output: {schema: AIGuessSchema},
   prompt: `You are an expert at categorizing civic issue reports. Your task is to analyze the user's description and determine the most appropriate category from the provided list.
 
   Available Categories:
-  - Pothole
-  - Garbage
-  - Streetlight
-  - Water
+  ${issueCategories.map(c => `- ${c}`).join('\n')}
 
   Based on the following description, please select the single best category.
 
@@ -43,6 +45,20 @@ const prompt = ai.definePrompt({
   "{{{description}}}"
 `,
 });
+
+// Function to find the closest match
+function findClosestCategory(guess: string): CategorizeIssueOutput['category'] {
+  const lowerCaseGuess = guess.toLowerCase();
+  for (const category of issueCategories) {
+    if (lowerCaseGuess.includes(category.toLowerCase())) {
+      return category;
+    }
+  }
+  // As a last resort, pick the first category if no match is found.
+  // This should be rare with the improved prompt.
+  return issueCategories[0];
+}
+
 
 const categorizeIssueFlow = ai.defineFlow(
   {
@@ -52,6 +68,13 @@ const categorizeIssueFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error("AI did not return an output.");
+    }
+    
+    // Find the closest valid category from the AI's guess
+    const matchedCategory = findClosestCategory(output.categoryGuess);
+
+    return { category: matchedCategory };
   }
 );
