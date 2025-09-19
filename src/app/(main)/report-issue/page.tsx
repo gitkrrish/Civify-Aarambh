@@ -144,7 +144,7 @@ export default function ReportIssuePage() {
                         size="sm"
                         onClick={handleCategorize}
                         disabled={isCategorizing}
-                        className="relative overflow-hidden bg-primary/90 text-primary-foreground hover:bg-primary/80 animate-pulse shadow-[0_0_15px_theme(colors.primary/50)]"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
                       >
                         <Wand2 className="mr-2 h-4 w-4" />
                         {isCategorizing ? 'Categorizing...' : 'Categorize with AI'}
